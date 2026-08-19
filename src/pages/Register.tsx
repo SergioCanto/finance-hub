@@ -72,9 +72,18 @@ export default function Register() {
                         value={email}
                         className="
                         w-full
-                        bg-zinc-800
+                        bg-zinc-700
+                        border
+                        border-zinc-600
+                        text-white
+                        placeholder:text-zinc-400
                         p-3
                         rounded-lg
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-blue-500
+                        focus:border-blue-500
+                        transition
                         "
                         onChange={(e) =>
                             setEmail(e.target.value)
@@ -85,11 +94,20 @@ export default function Register() {
                         type="password"
                         placeholder="Contraseña"
                         value={password}
-                        className="
+                       className="
                         w-full
-                        bg-zinc-800
+                        bg-zinc-700
+                        border
+                        border-zinc-600
+                        text-white
+                        placeholder:text-zinc-400
                         p-3
                         rounded-lg
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-blue-500
+                        focus:border-blue-500
+                        transition
                         "
                         onChange={(e) =>
                             setPassword(e.target.value)
