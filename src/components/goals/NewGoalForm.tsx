@@ -14,8 +14,8 @@ export default function NewGoalForm({
 }: Props) {
     const [form, setForm] = useState({
         name: "",
-        target_amount: 0,
-        current_amount: 0,
+        target_amount: "",
+        current_amount: "",
         target_date: "",
     });
 
@@ -40,19 +40,20 @@ export default function NewGoalForm({
                 onChange={(e) =>
                     setForm({
                         ...form,
-                        target_amount: Number(e.target.value),
+                        target_amount: e.target.value,
                     })
                 }
             />
 
             <input
                 type="number"
+                value={form.current_amount}
                 placeholder="Monto actual"
                 className="w-full bg-zinc-800 p-3 rounded-lg"
                 onChange={(e) =>
                     setForm({
                         ...form,
-                        current_amount: Number(e.target.value),
+                        current_amount: e.target.value,
                     })
                 }
             />
@@ -69,7 +70,17 @@ export default function NewGoalForm({
             />
 
             <button
-                onClick={() => onSave(form)}
+                onClick={() =>
+                    onSave({
+                        ...form,
+                        target_amount: Number(
+                            form.target_amount || 0
+                        ),
+                        current_amount: Number(
+                            form.current_amount || 0
+                        ),
+                    })
+                }
                 className="w-full bg-blue-600 py-3 rounded-lg"
             >
                 Guardar Meta

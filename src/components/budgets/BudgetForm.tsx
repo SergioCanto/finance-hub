@@ -29,7 +29,11 @@ export default function BudgetForm({
         category:
             initialData?.category || "",
         monthly_limit:
-            initialData?.monthly_limit || 0,
+            initialData
+                ? String(
+                    initialData.monthly_limit
+                )
+                : "",
         start_day:
             initialData?.start_day || 1,
         cycle_type:
@@ -41,12 +45,15 @@ export default function BudgetForm({
             setForm({
                 category: initialData.category,
                 monthly_limit:
-                    initialData.monthly_limit,
+                    String(
+                        initialData.monthly_limit
+                    ),
                 start_day:
                     initialData.start_day,
                 cycle_type:
                     initialData.cycle_type,
             });
+
         }
     }, [initialData]);
     useEffect(() => {
@@ -112,9 +119,9 @@ export default function BudgetForm({
                 onChange={(e) =>
                     setForm({
                         ...form,
-                        monthly_limit: Number(
+                        monthly_limit:
                             e.target.value
-                        ),
+                        ,
                     })
                 }
             />
@@ -123,17 +130,14 @@ export default function BudgetForm({
             </label>
             <input
                 type="number"
-                value={form.start_day}
-                min={1}
-                max={31}
-                placeholder="Ej: 15"
+                value={form.monthly_limit}
+                placeholder="Ej: 5000"
                 className="w-full bg-zinc-800 p-3 rounded-lg"
                 onChange={(e) =>
                     setForm({
                         ...form,
-                        start_day: Number(
-                            e.target.value
-                        ),
+                        monthly_limit:
+                            e.target.value,
                     })
                 }
             />
@@ -180,8 +184,12 @@ export default function BudgetForm({
                         return;
                     }
 
-                    onSave(form);
-
+                    onSave({
+                        ...form,
+                        monthly_limit: Number(
+                            form.monthly_limit || 0
+                        ),
+                    });
                 }}
                 className="
                 w-full

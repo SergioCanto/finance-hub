@@ -1,6 +1,7 @@
 import { supabase } from "../lib/supabase";
 
 export async function getDashboardMetrics() {
+
     const {
         data: { user },
     } = await supabase.auth.getUser();
@@ -10,20 +11,54 @@ export async function getDashboardMetrics() {
         .select("*")
         .eq("user_id", user?.id);
 
-    const income = data
-        ?.filter((t) => t.type === "income")
-        .reduce((a, b) => a + Number(b.amount), 0);
+    const now = new Date();
 
-    const expenses = data
-        ?.filter((t) => t.type === "expense")
-        .reduce(
-            (a, b) => a + Math.abs(Number(b.amount)),
-            0
-        );
+    const currentMonthTransactions =
+        data?.filter((tx) => {
+
+            const txDate =
+                new Date(
+                    tx.transaction_date
+                );
+
+            return (
+                txDate.getMonth() ===
+                now.getMonth() &&
+                txDate.getFullYear() ===
+                now.getFullYear()
+            );
+
+        }) || [];
+
+    const income =
+        currentMonthTransactions
+            .filter(
+                (t) => t.type === "income"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + Number(t.amount),
+                0
+            );
+
+    const expenses =
+        currentMonthTransactions
+            .filter(
+                (t) => t.type === "expense"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum +
+                    Math.abs(
+                        Number(t.amount)
+                    ),
+                0
+            );
 
     return {
-        income: income || 0,
-        expenses: expenses || 0,
-        balance: (income || 0) - (expenses || 0),
+        income,
+        expenses,
+        balance:
+            income - expenses,
     };
 }

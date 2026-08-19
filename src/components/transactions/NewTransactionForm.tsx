@@ -13,7 +13,7 @@ export default function NewTransactionForm({
     const [form, setForm] = useState({
         transaction_date: "",
         description: "",
-        amount: 0,
+        amount: "",
         type: "expense",
         category: "",
         account: "",
@@ -79,11 +79,12 @@ export default function NewTransactionForm({
                 <input
                     type="number"
                     placeholder="Monto"
+                    value={form.amount}
                     className="bg-zinc-800 p-3 rounded"
                     onChange={(e) =>
                         setForm({
                             ...form,
-                            amount: Number(e.target.value),
+                            amount: e.target.value,
                         })
                     }
                 />
@@ -164,7 +165,13 @@ export default function NewTransactionForm({
             </div>
 
             <button
-                onClick={() => onSave(form)}
+                onClick={() =>
+                    
+                    onSave({
+                        ...form,
+                        amount: Number(form.amount),
+                    })
+                }
                 className="mt-4 bg-green-600 px-4 py-2 rounded"
             >
                 Guardar

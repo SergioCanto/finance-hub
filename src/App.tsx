@@ -23,14 +23,21 @@ function App() {
   const [session, setSession] =
     useState<Session | null>(null);
 
+  const [loading, setLoading] =
+    useState(true);
+
   useEffect(() => {
 
     supabase.auth
       .getSession()
       .then(({ data }) => {
+
         setSession(
           data.session
         );
+
+        setLoading(false);
+
       });
 
     const {
@@ -47,6 +54,20 @@ function App() {
     };
 
   }, []);
+  if (loading) {
+    return (
+      <div className="
+      min-h-screen
+      flex
+      items-center
+      justify-center
+      bg-zinc-950
+      text-white
+    ">
+        Cargando...
+      </div>
+    );
+  }
   return (
     <BrowserRouter>
       <Routes>

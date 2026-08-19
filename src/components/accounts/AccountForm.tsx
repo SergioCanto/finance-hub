@@ -24,12 +24,18 @@ export default function AccountForm({
     const [form, setForm] = useState({
         name: "",
         type: "asset",
-        opening_balance: 0,
+        opening_balance: "",
     });
 
     useEffect(() => {
         if (initialData) {
-            setForm(initialData);
+            setForm({
+                ...initialData,
+                opening_balance:
+                    String(
+                        initialData.opening_balance
+                    ),
+            });
         }
     }, [initialData]);
 
@@ -87,26 +93,34 @@ export default function AccountForm({
                 <input
                     type="number"
                     value={form.opening_balance}
+                    placeholder="25000"
                     className="w-full bg-zinc-800 p-3 rounded-lg"
                     onChange={(e) =>
                         setForm({
                             ...form,
-                            opening_balance: Number(
-                                e.target.value
-                            ),
+                            opening_balance:
+                                e.target.value,
                         })
                     }
                 />
             </div>
 
             <button
-                onClick={() => onSave(form)}
                 className="
                 w-full
                 bg-blue-600
                 py-3
                 rounded-lg
                 "
+                onClick={() =>
+                    onSave({
+                        ...form,
+                        opening_balance:
+                            Number(
+                                form.opening_balance || 0
+                            ),
+                    })
+                }
             >
                 {isEditing
                     ? "Guardar Cambios"

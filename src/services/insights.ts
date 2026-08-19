@@ -47,7 +47,7 @@ export async function getInsights() {
             : 0;
 
     insights.push(
-        `✅ Tu tasa de ahorro es ${savingsRate.toFixed(
+        `✅ Tu tasa de ahorro de este mes es ${savingsRate.toFixed(
             0
         )}%`
     );
