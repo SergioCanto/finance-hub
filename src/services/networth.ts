@@ -27,24 +27,42 @@ export async function getNetWorth() {
                         tx.account === account.name
                 ) || [];
 
-            const movementTotal =
+            const currentBalance =
                 accountTransactions.reduce(
-                    (sum, tx) => {
+                    (balance, tx) => {
 
                         const amount =
-                            Number(tx.amount);
+                            Math.abs(
+                                Number(tx.amount)
+                            );
 
-                        return sum + amount;
+                        if (
+                            account.type === "asset"
+                        ) {
+
+                            return tx.type === "income"
+                                ? balance + amount
+                                : balance - amount;
+
+                        }
+
+                        if (
+                            account.type === "liability"
+                        ) {
+
+                            return tx.type === "expense"
+                                ? balance + amount
+                                : balance - amount;
+
+                        }
+
+                        return balance;
 
                     },
-                    0
+                    Number(
+                        account.opening_balance || 0
+                    )
                 );
-
-            const currentBalance =
-                Number(
-                    account.opening_balance || 0
-                ) +
-                movementTotal;
 
             return {
                 ...account,

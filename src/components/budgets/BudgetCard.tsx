@@ -1,3 +1,7 @@
+import {
+    getMonthlyEquivalent
+} from "../../utils/budgetUtils";
+
 type Props = {
     id: string;
     category: string;
@@ -57,6 +61,13 @@ export default function BudgetCard({
                 month: "short",
             }
         );
+
+    const monthlyEquivalent =
+        getMonthlyEquivalent(
+            limit,
+            cycleType
+        );
+
     return (
         <div className="bg-zinc-900 p-6 rounded-xl">
             <div className="flex justify-between items-start mb-3">
@@ -72,13 +83,22 @@ export default function BudgetCard({
                     <p className="text-xs text-zinc-500">
 
                         {cycleType === "weekly" &&
-                            "Semanal"}
+                            `Semanal • $${limit.toLocaleString()}`}
 
                         {cycleType === "biweekly" &&
-                            "Quincenal"}
+                            `Quincenal • $${limit.toLocaleString()}`}
 
                         {cycleType === "monthly" &&
-                            "Mensual"}
+                            `Mensual • $${limit.toLocaleString()}`}
+
+                        {cycleType === "bimonthly" &&
+                            `Bimestral • $${limit.toLocaleString()}`}
+
+                        {cycleType === "semiannual" &&
+                            `Semestral • $${limit.toLocaleString()}`}
+
+                        {cycleType === "annual" &&
+                            `Anual • $${limit.toLocaleString()}`}
 
                     </p>
                 </div>
@@ -120,9 +140,16 @@ export default function BudgetCard({
                 />
             </div>
 
-            <p className="mt-3 text-zinc-400">
-                ${spent.toLocaleString()} / $
-                {limit.toLocaleString()}
+            <p className="text-cyan-400 text-sm mt-1">
+                $
+                {monthlyEquivalent.toLocaleString(
+                    undefined,
+                    {
+                        maximumFractionDigits: 2,
+                    }
+                )}
+                {" "}
+                al mes
             </p>
             {spent > limit && (
                 <p className="mt-2 text-red-400 text-sm">

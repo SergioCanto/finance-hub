@@ -294,6 +294,12 @@ export default function Dashboard() {
                                         $
                                         {budgetPlanning.budgetTotal.toLocaleString()}
                                     </p>
+                                    <p className="text-red-400">
+                                        Tarjetas de Crédito:
+                                        {" "}
+                                        $
+                                        {budgetPlanning.liabilityExpenses.toLocaleString()}
+                                    </p>
 
                                 </div>
 

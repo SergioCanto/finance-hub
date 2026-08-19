@@ -35,7 +35,11 @@ export default function BudgetForm({
                 )
                 : "",
         start_day:
-            initialData?.start_day || 1,
+            initialData
+                ? String(
+                    initialData.start_day
+                )
+                : "",
         cycle_type:
             initialData?.cycle_type ||
             "monthly",
@@ -49,7 +53,9 @@ export default function BudgetForm({
                         initialData.monthly_limit
                     ),
                 start_day:
-                    initialData.start_day,
+                    String(
+                        initialData.start_day
+                    ),
                 cycle_type:
                     initialData.cycle_type,
             });
@@ -130,14 +136,17 @@ export default function BudgetForm({
             </label>
             <input
                 type="number"
-                value={form.monthly_limit}
-                placeholder="Ej: 5000"
+                value={form.start_day}
+                min={1}
+                max={31}
+                placeholder="Ej: 15"
                 className="w-full bg-zinc-800 p-3 rounded-lg"
                 onChange={(e) =>
                     setForm({
                         ...form,
-                        monthly_limit:
-                            e.target.value,
+                        start_day:
+                            e.target.value
+                        ,
                     })
                 }
             />
@@ -171,6 +180,17 @@ export default function BudgetForm({
                 <option value="monthly">
                     Mensual
                 </option>
+                <option value="bimonthly">
+                    Bimestral
+                </option>
+
+                <option value="semiannual">
+                    Semestral
+                </option>
+
+                <option value="annual">
+                    Anual
+                </option>
 
             </select>
 
@@ -188,6 +208,9 @@ export default function BudgetForm({
                         ...form,
                         monthly_limit: Number(
                             form.monthly_limit || 0
+                        ),
+                        start_day: Number(
+                            form.start_day || 1
                         ),
                     });
                 }}

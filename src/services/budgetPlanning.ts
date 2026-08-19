@@ -1,9 +1,20 @@
 import { supabase } from "../lib/supabase";
+import {
+    getMonthlyEquivalent
+} from "../utils/budgetUtils";
 
 export async function getBudgetPlanning() {
     const {
         data: { user },
     } = await supabase.auth.getUser();
+
+    const { data: liabilityAccounts } =
+        await supabase
+            .from("accounts")
+            .select("name")
+            .eq("user_id", user?.id)
+            .eq("type", "liability")
+            .eq("is_active", true);
 
     const { data: budgets } =
         await supabase
@@ -48,11 +59,52 @@ export async function getBudgetPlanning() {
         budgets?.reduce(
             (sum, budget) =>
                 sum +
-                Number(
-                    budget.monthly_limit
+                getMonthlyEquivalent(
+                    Number(
+                        budget.monthly_limit
+                    ),
+                    budget.cycle_type
                 ),
             0
         ) || 0;
+
+    const liabilityExpenses =
+        transactions
+            ?.filter((tx) => {
+
+                const txDate =
+                    new Date(
+                        tx.transaction_date
+                    );
+
+                const isCurrentMonth =
+                    txDate.getMonth() ===
+                    now.getMonth() &&
+                    txDate.getFullYear() ===
+                    now.getFullYear();
+
+                const isLiabilityAccount =
+                    liabilityAccounts?.some(
+                        (account) =>
+                            account.name ===
+                            tx.account
+                    );
+
+                return (
+                    tx.type === "expense" &&
+                    isCurrentMonth &&
+                    isLiabilityAccount
+                );
+
+            })
+            .reduce(
+                (sum, tx) =>
+                    sum +
+                    Math.abs(
+                        Number(tx.amount)
+                    ),
+                0
+            ) || 0;
 
     const available =
         Math.max(
@@ -63,6 +115,7 @@ export async function getBudgetPlanning() {
     return {
         income,
         budgetTotal,
+        liabilityExpenses,
         available,
 
         chartData: [
@@ -70,8 +123,11 @@ export async function getBudgetPlanning() {
                 (budget) => ({
                     name:
                         budget.category,
-                    value: Number(
-                        budget.monthly_limit
+                    value: getMonthlyEquivalent(
+                        Number(
+                            budget.monthly_limit
+                        ),
+                        budget.cycle_type
                     ),
                 })
             ),
