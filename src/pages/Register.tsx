@@ -18,22 +18,28 @@ export default function Register() {
 
     async function handleRegister() {
 
-        const { error } =
+        const result =
             await supabase.auth.signUp({
                 email,
                 password,
             });
 
+        console.log(result);
+
+        const { error } = result;
+
         if (error) {
-            alert(error.message);
+            alert(
+                JSON.stringify(
+                    error,
+                    null,
+                    2
+                )
+            );
             return;
         }
 
-        alert(
-            "Cuenta creada correctamente"
-        );
-
-        navigate("/login");
+        alert("Cuenta creada correctamente");
     }
 
     return (
