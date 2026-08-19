@@ -9,7 +9,8 @@ export async function getNetWorth() {
         await supabase
             .from("accounts")
             .select("*")
-            .eq("user_id", user?.id);
+            .eq("user_id", user?.id)
+            .eq("is_active", true);
 
     const { data: transactions } =
         await supabase
