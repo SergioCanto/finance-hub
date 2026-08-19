@@ -48,7 +48,10 @@ export default function Register() {
         >
             <div
                 className="
-                bg-zinc-900
+                bg-zinc-900/95
+                border
+                border-zinc-800
+                shadow-xl
                 p-8
                 rounded-xl
                 w-[400px]
@@ -56,9 +59,14 @@ export default function Register() {
             >
                 <h1
                     className="
-                    text-2xl
-                    font-bold
-                    mb-6
+                    text-4xl
+                    font-extrabold
+                    mb-8
+                    bg-gradient-to-r
+                    from-blue-400
+                    to-green-400
+                    bg-clip-text
+                    text-transparent
                     "
                 >
                     Crear Cuenta
@@ -72,17 +80,16 @@ export default function Register() {
                         value={email}
                         className="
                         w-full
-                        bg-zinc-700
+                        bg-white
+                        text-black
+                        placeholder:text-zinc-500
                         border
-                        border-zinc-600
-                        text-white
-                        placeholder:text-zinc-400
+                        border-zinc-300
                         p-3
                         rounded-lg
                         focus:outline-none
                         focus:ring-2
                         focus:ring-blue-500
-                        focus:border-blue-500
                         transition
                         "
                         onChange={(e) =>
@@ -94,19 +101,18 @@ export default function Register() {
                         type="password"
                         placeholder="Contraseña"
                         value={password}
-                       className="
+                        className="
                         w-full
-                        bg-zinc-700
+                        bg-white
+                        text-black
+                        placeholder:text-zinc-500
                         border
-                        border-zinc-600
-                        text-white
-                        placeholder:text-zinc-400
+                        border-zinc-300
                         p-3
                         rounded-lg
                         focus:outline-none
                         focus:ring-2
                         focus:ring-blue-500
-                        focus:border-blue-500
                         transition
                         "
                         onChange={(e) =>
