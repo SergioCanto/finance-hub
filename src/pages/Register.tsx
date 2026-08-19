@@ -2,10 +2,13 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import {
     Link,
+    useNavigate,
 } from "react-router-dom";
 
 export default function Register() {
 
+    const navigate =
+        useNavigate();
 
     const [email, setEmail] =
         useState("");
@@ -15,28 +18,22 @@ export default function Register() {
 
     async function handleRegister() {
 
-        const result =
+        const { error } =
             await supabase.auth.signUp({
                 email,
                 password,
             });
 
-        console.log(result);
-
-        const { error } = result;
-
         if (error) {
-            alert(
-                JSON.stringify(
-                    error,
-                    null,
-                    2
-                )
-            );
+            alert(error.message);
             return;
         }
 
-        alert("Cuenta creada correctamente");
+        alert(
+            "Cuenta creada correctamente"
+        );
+
+        navigate("/login");
     }
 
     return (
