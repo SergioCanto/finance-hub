@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import GoalCard from "../components/goals/GoalCard";
 import NewGoalForm from "../components/goals/NewGoalForm";
+import { Trash2 } from "lucide-react";
 
 import {
     getGoals,
@@ -251,6 +252,20 @@ export default function Goals() {
                                 <p className="mt-3 text-green-400">
                                     ✅ Completada
                                 </p>
+                                <button
+                                    onClick={() => handleDeleteGoal(goal.id)}
+                                    className="
+                                        mt-4
+                                        flex
+                                        items-center
+                                        gap-2
+                                        text-red-400
+                                        hover:text-red-300
+                                    "
+                                >
+                                    <Trash2 size={16} />
+                                    Eliminar Meta
+                                </button>
                             </div>
                         ))}
 
