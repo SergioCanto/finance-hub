@@ -2,13 +2,10 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import {
     Link,
-    useNavigate,
 } from "react-router-dom";
 
 export default function Register() {
 
-    const navigate =
-        useNavigate();
 
     const [email, setEmail] =
         useState("");
