@@ -7,6 +7,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
@@ -69,72 +70,75 @@ function App() {
     );
   }
   return (
-    <BrowserRouter>
-      <Routes>
+    <>
+      <BrowserRouter>
+        <Routes>
 
-        {/* Públicas */}
-
-        <Route
-          path="/login"
-          element={<Login />}
-        />
-
-        <Route
-          path="/register"
-          element={<Register />}
-        />
-
-        {/* Privadas */}
-
-        <Route
-          element={
-            <ProtectedRoute
-              session={session}
-            >
-              <AppLayout />
-            </ProtectedRoute>
-          }
-        >
+          {/* Públicas */}
 
           <Route
-            path="/"
-            element={<Dashboard />}
+            path="/login"
+            element={<Login />}
           />
 
           <Route
-            path="/transactions"
-            element={<Transactions />}
+            path="/register"
+            element={<Register />}
           />
+
+          {/* Privadas */}
 
           <Route
-            path="/budgets"
-            element={<Budgets />}
-          />
+            element={
+              <ProtectedRoute
+                session={session}
+              >
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
 
-          <Route
-            path="/net-worth"
-            element={<NetWorth />}
-          />
+            <Route
+              path="/"
+              element={<Dashboard />}
+            />
 
-          <Route
-            path="/goals"
-            element={<Goals />}
-          />
+            <Route
+              path="/transactions"
+              element={<Transactions />}
+            />
 
-          <Route
-            path="/categories"
-            element={<Categories />}
-          />
+            <Route
+              path="/budgets"
+              element={<Budgets />}
+            />
 
-          <Route
-            path="/accounts"
-            element={<Accounts />}
-          />
+            <Route
+              path="/net-worth"
+              element={<NetWorth />}
+            />
 
-        </Route>
+            <Route
+              path="/goals"
+              element={<Goals />}
+            />
 
-      </Routes>
-    </BrowserRouter>
+            <Route
+              path="/categories"
+              element={<Categories />}
+            />
+
+            <Route
+              path="/accounts"
+              element={<Accounts />}
+            />
+
+          </Route>
+
+        </Routes>
+      </BrowserRouter>
+      <Analytics />
+    </>
   );
 }
 
