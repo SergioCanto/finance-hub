@@ -11,12 +11,35 @@ export default function Transactions() {
     const [transactions, setTransactions] =
         useState<any[]>([]);
 
+    const [
+        categoryFilter,
+        setCategoryFilter,
+    ] = useState("");
+
     useEffect(() => {
         loadTransactions();
     }, []);
 
     const [showForm, setShowForm] =
         useState(false);
+
+    const categoryOptions =
+        [...new Set(
+            transactions.map(
+                (tx) => tx.category
+            )
+        )]
+            .filter(Boolean)
+            .sort();
+
+    const filteredTransactions =
+        categoryFilter
+            ? transactions.filter(
+                (tx) =>
+                    tx.category ===
+                    categoryFilter
+            )
+            : transactions;
 
     async function handleSave(data: any) {
         await createTransaction(data);
@@ -61,6 +84,55 @@ export default function Transactions() {
                     Nueva Transacción
                 </button>
             </div>
+
+            <div className="mb-6">
+
+                <select
+                    value={categoryFilter}
+                    className="
+                    bg-zinc-900
+                    p-3
+                    rounded-lg
+                    min-w-[250px]
+                    "
+                    onChange={(e) =>
+                        setCategoryFilter(
+                            e.target.value
+                        )
+                    }
+                >
+
+                    <option value="">
+                        Todas las categorías
+                    </option>
+
+                    {categoryOptions.map(
+                        (category) => (
+
+                            <option
+                                key={category}
+                                value={category}
+                            >
+                                {category}
+                            </option>
+
+                        )
+                    )}
+
+                </select>
+
+                <p className="text-sm text-zinc-400 mt-2">
+
+                    Mostrando
+                    {" "}
+                    {filteredTransactions.length}
+                    {" "}
+                    transacciones
+
+                </p>
+
+            </div>
+
             {showForm && (
                 <NewTransactionForm
                     onSave={handleSave}
@@ -90,7 +162,7 @@ export default function Transactions() {
                         </thead>
 
                         <tbody>
-                            {transactions.map((tx) => (
+                            {filteredTransactions.map((tx) => (
                                 <tr
                                     key={tx.id}
                                     className="border-b border-zinc-800"
@@ -133,7 +205,7 @@ export default function Transactions() {
                 </div>
                 <div className="md:hidden space-y-4">
 
-                    {transactions.map((tx) => (
+                    {filteredTransactions.map((tx) => (
 
                         <div
                             key={tx.id}

@@ -2,11 +2,32 @@ import { supabase } from "../lib/supabase";
 import {
     getMonthlyEquivalent
 } from "../utils/budgetUtils";
+import {
+    getUserPreferences,
+} from "./userPreferences";
+
+import {
+    getCurrentFinancialPeriod,
+} from "../utils/financialPeriod";
 
 export async function getBudgetPlanning() {
     const {
         data: { user },
     } = await supabase.auth.getUser();
+
+    const preferences =
+        await getUserPreferences();
+
+    const periodStartDay =
+        preferences?.period_start_day || 1;
+
+    const {
+        startDate,
+        endDate,
+    } =
+        getCurrentFinancialPeriod(
+            periodStartDay
+        );
 
     const { data: liabilityAccounts } =
         await supabase
@@ -15,6 +36,12 @@ export async function getBudgetPlanning() {
             .eq("user_id", user?.id)
             .eq("type", "liability")
             .eq("is_active", true);
+
+    const liabilityAccountNames =
+        liabilityAccounts?.map(
+            (account) =>
+                account.name
+        ) || [];
 
     const { data: budgets } =
         await supabase
@@ -28,8 +55,6 @@ export async function getBudgetPlanning() {
             .select("*")
             .eq("user_id", user?.id);
 
-    const now = new Date();
-
     const income =
         transactions
             ?.filter((tx) => {
@@ -41,14 +66,14 @@ export async function getBudgetPlanning() {
 
                 return (
                     tx.type === "income" &&
-                    txDate.getMonth() ===
-                    now.getMonth() &&
-                    txDate.getFullYear() ===
-                    now.getFullYear()
+                    !liabilityAccountNames.includes(
+                        tx.account
+                    ) &&
+                    txDate >= startDate &&
+                    txDate <= endDate
                 );
 
-            })
-            .reduce(
+            }).reduce(
                 (sum, tx) =>
                     sum +
                     Number(tx.amount),
@@ -77,11 +102,9 @@ export async function getBudgetPlanning() {
                         tx.transaction_date
                     );
 
-                const isCurrentMonth =
-                    txDate.getMonth() ===
-                    now.getMonth() &&
-                    txDate.getFullYear() ===
-                    now.getFullYear();
+                const isCurrentPeriod =
+                    txDate >= startDate &&
+                    txDate <= endDate;
 
                 const isLiabilityAccount =
                     liabilityAccounts?.some(
@@ -92,7 +115,7 @@ export async function getBudgetPlanning() {
 
                 return (
                     tx.type === "expense" &&
-                    isCurrentMonth &&
+                    isCurrentPeriod &&
                     isLiabilityAccount
                 );
 

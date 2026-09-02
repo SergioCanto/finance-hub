@@ -83,3 +83,29 @@ export async function addContribution(
 
     return data;
 }
+
+export async function updateGoal(
+    goalId: string,
+    goal: {
+        name: string;
+        target_amount: number;
+        target_date: string;
+    }
+) {
+    const { data, error } =
+        await supabase
+            .from("goals")
+            .update({
+                name: goal.name,
+                target_amount:
+                    goal.target_amount,
+                target_date:
+                    goal.target_date,
+            })
+            .eq("id", goalId)
+            .select();
+
+    if (error) throw error;
+
+    return data;
+}

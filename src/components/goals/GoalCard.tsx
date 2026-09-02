@@ -17,6 +17,8 @@ type Props = {
     onComplete: (
         goalId: string
     ) => void;
+
+    onEdit: () => void;
 };
 
 export default function GoalCard({
@@ -27,7 +29,8 @@ export default function GoalCard({
     targetDate,
     onContribution,
     onDelete,
-    onComplete
+    onComplete,
+    onEdit,
 }: Props) {
     const percent =
         (current / target) * 100;
@@ -57,9 +60,26 @@ export default function GoalCard({
 
     return (
         <div className="bg-zinc-900 p-6 rounded-xl">
-            <h3 className="font-bold text-lg">
-                {name}
-            </h3>
+
+            <div className="flex justify-between items-start">
+
+                <h3 className="font-bold text-xl">
+                    {name}
+                </h3>
+
+                <button
+                    onClick={onEdit}
+                    className="
+                text-blue-400
+                hover:text-blue-300
+                transition
+                "
+                    title="Editar Meta"
+                >
+                    ✏️
+                </button>
+
+            </div>
 
             <p className="mt-2 text-zinc-400">
                 ${current.toLocaleString()} / ${target.toLocaleString()}
@@ -131,6 +151,7 @@ export default function GoalCard({
                         ✅ Marcar como Completada
                     </button>
                 )}
+
                 <button
                     onClick={() => onDelete(id)}
                     className="
@@ -148,6 +169,6 @@ export default function GoalCard({
                     🗑 Eliminar Meta
                 </button>
             </div>
-        </div>
+        </div >
     );
 }

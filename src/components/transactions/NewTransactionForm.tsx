@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { getCategories } from "../../services/categories";
+import {
+    getCategories,
+    createCategory,
+} from "../../services/categories";
 import { getAccounts } from "../../services/accounts";
 
 type Props = {
@@ -29,6 +32,17 @@ export default function NewTransactionForm({
 
     const [accounts, setAccounts] =
         useState<any[]>([]);
+
+    const [
+        showCategoryModal,
+        setShowCategoryModal,
+    ] = useState(false);
+
+    const [
+        newCategoryName,
+        setNewCategoryName,
+    ] = useState("");
+
     const filteredCategories =
         categories.filter(
             (category) =>
@@ -44,6 +58,30 @@ export default function NewTransactionForm({
         const data = await getAccounts();
 
         setAccounts(data || []);
+    }
+
+    async function handleCreateCategory() {
+
+        if (!newCategoryName.trim()) {
+            return;
+        }
+
+        await createCategory({
+            name: newCategoryName,
+            type: form.type,
+        });
+
+        await loadCategories();
+
+        setForm({
+            ...form,
+            category: newCategoryName,
+        });
+
+        setNewCategoryName("");
+
+        setShowCategoryModal(false);
+
     }
 
     return (
@@ -112,12 +150,26 @@ export default function NewTransactionForm({
                 <select
                     value={form.category}
                     className="bg-zinc-800 p-3 rounded"
-                    onChange={(e) =>
+                    onChange={(e) => {
+
+                        if (
+                            e.target.value ===
+                            "__new_category__"
+                        ) {
+
+                            setShowCategoryModal(
+                                true
+                            );
+
+                            return;
+                        }
+
                         setForm({
                             ...form,
                             category: e.target.value,
-                        })
-                    }
+                        });
+
+                    }}
                 >
                     <option value="">
                         Selecciona categoría
@@ -131,6 +183,10 @@ export default function NewTransactionForm({
                             {category.name}
                         </option>
                     ))}
+
+                    <option value="__new_category__">
+                        ➕ Crear Nueva Categoría...
+                    </option>
                 </select>
                 <p className="text-xs text-zinc-400">
                     Categorías disponibles para:
@@ -140,6 +196,7 @@ export default function NewTransactionForm({
                         : "Ingreso"}
                 </p>
                 <select
+                    value={form.account}
                     className="bg-zinc-800 p-3 rounded"
                     onChange={(e) =>
                         setForm({
@@ -164,9 +221,96 @@ export default function NewTransactionForm({
 
             </div>
 
+            {showCategoryModal && (
+
+                <div
+                    className="
+                    fixed
+                    inset-0
+                    bg-black/70
+                    flex
+                    items-center
+                    justify-center
+                    z-50
+                    "
+                >
+
+                    <div
+                        className="
+                        bg-zinc-900
+                        p-6
+                        rounded-xl
+                        w-[400px]
+                        "
+                    >
+
+                        <div className="flex justify-between mb-4">
+
+                            <h3 className="text-xl font-bold">
+                                Nueva Categoría
+                            </h3>
+
+                            <button
+                                onClick={() =>
+                                    setShowCategoryModal(false)
+                                }
+                            >
+                                ✕
+                            </button>
+
+                        </div>
+
+                        <p className="text-zinc-400 mb-4">
+
+                            Categoría para:
+
+                            {" "}
+
+                            {form.type === "expense"
+                                ? "Gasto"
+                                : "Ingreso"}
+
+                        </p>
+
+                        <input
+                            type="text"
+                            value={newCategoryName}
+                            placeholder="Nombre de la categoría"
+                            className="
+                            w-full
+                            bg-zinc-800
+                            p-3
+                            rounded-lg
+                            "
+                            onChange={(e) =>
+                                setNewCategoryName(
+                                    e.target.value
+                                )
+                            }
+                        />
+
+                        <button
+                            onClick={handleCreateCategory}
+                            className="
+                                mt-4
+                                w-full
+                                bg-blue-600
+                                py-3
+                                rounded-lg
+                                "
+                        >
+                            Crear Categoría
+                        </button>
+
+                    </div>
+
+                </div>
+
+            )}
+
             <button
                 onClick={() =>
-                    
+
                     onSave({
                         ...form,
                         amount: Number(form.amount),

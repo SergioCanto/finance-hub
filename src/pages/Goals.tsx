@@ -9,12 +9,17 @@ import {
     addContribution,
     completeGoal,
     deleteGoal,
+    updateGoal,
 } from "../services/goals";
 
 export default function Goals() {
     const [goals, setGoals] = useState<any[]>([]);
     const [showModal, setShowModal] =
         useState(false);
+
+    const [editingGoal,
+        setEditingGoal] =
+        useState<any>(null);
 
     const [selectedGoalId, setSelectedGoalId] =
         useState("");
@@ -80,6 +85,38 @@ export default function Goals() {
 
         loadGoals();
     }
+
+    async function handleUpdateGoal(
+        goal: {
+            name: string;
+            target_amount: number;
+            current_amount: number;
+            target_date: string;
+        }
+    ) {
+
+        await updateGoal(
+            editingGoal.id,
+            goal
+        );
+
+        setEditingGoal(null);
+
+        setShowModal(false);
+
+        loadGoals();
+    }
+
+    function handleEditGoal(
+        goal: any
+    ) {
+
+        setEditingGoal(goal);
+
+        setShowModal(true);
+
+    }
+
     function openContributionModal(
         goalId: string,
         currentAmount: number
@@ -130,21 +167,34 @@ export default function Goals() {
 
                         <div className="flex justify-between mb-4">
                             <h2 className="text-xl font-bold">
-                                Nueva Meta
+                                {editingGoal
+                                    ? "Editar Meta"
+                                    : "Nueva Meta"}
                             </h2>
 
                             <button
-                                onClick={() =>
-                                    setShowModal(false)
-                                }
+                                onClick={() => {
+
+                                    setShowModal(false);
+
+                                    setEditingGoal(null);
+
+                                }}
                             >
                                 ✕
                             </button>
                         </div>
 
                         <NewGoalForm
-                            onSave={handleSave}
+                            initialData={editingGoal}
+                            isEditing={!!editingGoal}
+                            onSave={
+                                editingGoal
+                                    ? handleUpdateGoal
+                                    : handleSave
+                            }
                         />
+
 
                     </div>
 
@@ -214,6 +264,9 @@ export default function Goals() {
                         }
                         onDelete={handleDeleteGoal}
                         onComplete={handleCompleteGoal}
+                        onEdit={() =>
+                            handleEditGoal(goal)
+                        }
                     />
                 ))}
 

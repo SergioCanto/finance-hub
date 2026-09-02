@@ -1,4 +1,12 @@
 import { supabase } from "../lib/supabase";
+import {
+    getUserPreferences,
+} from "./userPreferences";
+
+import {
+    getCurrentFinancialPeriod,
+} from "../utils/financialPeriod";
+
 
 export async function getInsights() {
     const {
@@ -6,11 +14,40 @@ export async function getInsights() {
     } = await supabase.auth.getUser();
     const insights: string[] = [];
 
+    const preferences =
+        await getUserPreferences();
+
+    const periodStartDay =
+        preferences?.period_start_day || 1;
+
+    const {
+        startDate,
+        endDate,
+    } =
+        getCurrentFinancialPeriod(
+            periodStartDay
+        );
+
     const { data: transactions } =
         await supabase
             .from("transactions")
             .select("*")
             .eq("user_id", user?.id);
+
+    const periodTransactions =
+        transactions?.filter((tx) => {
+
+            const txDate =
+                new Date(
+                    tx.transaction_date
+                );
+
+            return (
+                txDate >= startDate &&
+                txDate <= endDate
+            );
+
+        }) || [];
 
     const { data: budgets } =
         await supabase
@@ -24,16 +61,45 @@ export async function getInsights() {
             .select("*")
             .eq("user_id", user?.id);
 
+    const { data: accounts } =
+        await supabase
+            .from("accounts")
+            .select("name,type")
+            .eq("user_id", user?.id)
+            .eq("is_active", true);
+
     const income =
-        transactions
-            ?.filter((t) => t.type === "income")
+        periodTransactions
+            ?.filter((t) => {
+
+                if (
+                    t.type !== "income"
+                ) {
+                    return false;
+                }
+
+                const account =
+                    accounts?.find(
+                        (a) =>
+                            a.name ===
+                            t.account
+                    );
+
+                return (
+                    account?.type !==
+                    "liability"
+                );
+
+            })
             .reduce(
-                (sum, t) => sum + Number(t.amount),
+                (sum, t) =>
+                    sum +
+                    Number(t.amount),
                 0
             ) || 0;
 
     const expenses =
-        transactions
+        periodTransactions
             ?.filter((t) => t.type === "expense")
             .reduce(
                 (sum, t) =>
@@ -47,14 +113,15 @@ export async function getInsights() {
             : 0;
 
     insights.push(
-        `✅ Tu tasa de ahorro de este mes es ${savingsRate.toFixed(
+        `✅ Tu tasa de ahorro de este periodo es ${savingsRate.toFixed(
             0
-        )}%`
+        )
+        }% `
     );
 
     budgets?.forEach((budget) => {
         const spent =
-            transactions
+            periodTransactions
                 ?.filter(
                     (tx) =>
                         tx.type === "expense" &&
@@ -73,7 +140,8 @@ export async function getInsights() {
             insights.push(
                 `⚠️ ${budget.category} ha consumido ${percent.toFixed(
                     0
-                )}% del presupuesto`
+                )
+                }% del presupuesto`
             );
         }
     });
@@ -95,7 +163,8 @@ export async function getInsights() {
         insights.push(
             `🎯 Tu meta más avanzada es ${bestGoal.name} (${progress.toFixed(
                 0
-            )}%)`
+            )
+            }%)`
         );
     }
 
@@ -104,7 +173,7 @@ export async function getInsights() {
         number
     > = {};
 
-    transactions?.forEach((tx) => {
+    periodTransactions?.forEach((tx) => {
         if (tx.type === "expense") {
             categories[tx.category] =
                 (categories[tx.category] || 0) +

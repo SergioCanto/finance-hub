@@ -34,7 +34,7 @@ export default function BudgetPlanningChart({
     return (
         <ResponsiveContainer
             width="100%"
-            height={350}
+            height={450}
         >
             <PieChart>
                 <Tooltip
@@ -52,21 +52,23 @@ export default function BudgetPlanningChart({
                     data={data}
                     dataKey="value"
                     nameKey="name"
-                    innerRadius={90}
-                    outerRadius={130}
+                    innerRadius={75}
+                    outerRadius={115}
+                    cx="50%"
+                    cy="42%"
                 >
                     <Label
                         position="center"
                         content={() => (
                             <text
                                 x="50%"
-                                y="50%"
+                                y="42%"
                                 textAnchor="middle"
                                 dominantBaseline="middle"
                             >
                                 <tspan
                                     x="50%"
-                                    dy="-0.5em"
+                                    dy="-2.5em"
                                     fill="#22c55e"
                                     fontSize="20"
                                     fontWeight="bold"
@@ -79,9 +81,9 @@ export default function BudgetPlanningChart({
 
                                 <tspan
                                     x="50%"
-                                    dy="1.5em"
+                                    dy="1.4em"
                                     fill="#a1a1aa"
-                                    fontSize="14"
+                                    fontSize="15"
                                 >
                                     Disponible
                                 </tspan>
@@ -103,7 +105,10 @@ export default function BudgetPlanningChart({
                     )}
                 </Pie>
 
-                <Legend />
+                <Legend
+                    layout="horizontal"
+                    align="center"
+                />
 
             </PieChart>
         </ResponsiveContainer>

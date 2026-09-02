@@ -11,6 +11,15 @@ import {
     getBudgetPlanning,
 } from "../services/budgetPlanning";
 
+import {
+    getUserPreferences,
+    saveUserPreferences,
+} from "../services/userPreferences";
+
+import {
+    getCurrentFinancialPeriod,
+} from "../utils/financialPeriod";
+
 export default function Dashboard() {
     const [metrics, setMetrics] = useState({
         income: 0,
@@ -30,13 +39,34 @@ export default function Dashboard() {
         budgetPlanning,
         setBudgetPlanning,
     ] = useState<any>(null);
+    const [
+        periodStartDay,
+        setPeriodStartDay,
+    ] = useState(1);
+
+
     useEffect(() => {
+        loadPreferences();
         loadMetrics();
         loadAnalytics();
         loadNetWorth();
         loadInsights();
         loadBudgetPlanning();
     }, []);
+    async function loadPreferences() {
+
+        const preferences =
+            await getUserPreferences();
+
+        if (
+            preferences?.period_start_day
+        ) {
+
+            setPeriodStartDay(
+                preferences.period_start_day
+            );
+        }
+    }
     async function loadNetWorth() {
         const worth =
             await getNetWorthMetric();
@@ -99,6 +129,27 @@ export default function Dashboard() {
                 ? "Buenas tardes"
                 : "Buenas noches";
 
+    const {
+        startDate,
+        endDate } =
+        getCurrentFinancialPeriod(periodStartDay
+        );
+
+    const periodLabel =
+        `${startDate.toLocaleDateString(
+            "es-MX",
+            {
+                day: "numeric",
+                month: "short",
+            }
+        )} - ${endDate.toLocaleDateString(
+            "es-MX",
+            {
+                day: "numeric",
+                month: "short",
+            }
+        )}`;
+
     let planningMessage = "";
 
     if (budgetPlanning) {
@@ -117,7 +168,7 @@ export default function Dashboard() {
         } else {
 
             planningMessage =
-                `Tienes $${budgetPlanning.available.toLocaleString()} disponibles para ahorrar este mes.`;
+                `Tienes $${budgetPlanning.available.toLocaleString()} disponibles para ahorrar este periodo.`;
 
         }
     }
@@ -129,6 +180,70 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-bold">
                     {greeting}
                 </h1>
+
+                <div className="mt-3">
+
+                    <p className="text-zinc-400">
+                        Periodo: {periodLabel}
+                    </p>
+
+                    <div className="mt-3">
+
+                        <label
+                            className="
+                            text-sm
+                            text-zinc-400
+                            mr-3
+                            "
+                        >
+                            Inicio del periodo
+                        </label>
+
+                        <select
+                            value={periodStartDay}
+                            className="
+                            bg-zinc-800
+                            px-3
+                            py-2
+                            rounded-lg
+                            "
+                            onChange={async (e) => {
+
+                                const day =
+                                    Number(
+                                        e.target.value
+                                    );
+
+                                setPeriodStartDay(
+                                    day
+                                );
+
+                                await saveUserPreferences(
+                                    day
+                                );
+
+                            }}
+                        >
+
+                            {Array.from(
+                                { length: 28 },
+                                (_, i) => i + 1
+                            ).map((day) => (
+
+                                <option
+                                    key={day}
+                                    value={day}
+                                >
+                                    Día {day}
+                                </option>
+
+                            ))}
+
+                        </select>
+
+                    </div>
+
+                </div>
 
                 {planningMessage && (
 
@@ -224,7 +339,7 @@ export default function Dashboard() {
                     "
                 >
                     <p className="text-zinc-400">
-                        Ahorro Mensual
+                        Ahorro del Periodo
                     </p>
 
                     <h2 className="text-3xl font-bold text-yellow-400">
@@ -273,6 +388,11 @@ export default function Dashboard() {
                             <h2 className="text-xl font-bold mb-6">
                                 Planeación de Ingresos
                             </h2>
+                            <p className="text-zinc-400 text-sm mb-4">
+                                Periodo:
+                                {" "}
+                                {periodLabel}
+                            </p>
 
                             <div className="grid
                                 grid-cols-1

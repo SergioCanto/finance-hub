@@ -1,4 +1,11 @@
 import { supabase } from "../lib/supabase";
+import {
+    getUserPreferences,
+} from "./userPreferences";
+
+import {
+    getCurrentFinancialPeriod,
+} from "../utils/financialPeriod";
 
 export async function getDashboardMetrics() {
 
@@ -11,9 +18,29 @@ export async function getDashboardMetrics() {
         .select("*")
         .eq("user_id", user?.id);
 
-    const now = new Date();
+    const { data: accounts } =
+        await supabase
+            .from("accounts")
+            .select("name,type")
+            .eq("user_id", user?.id)
+            .eq("is_active", true);
 
-    const currentMonthTransactions =
+
+    const preferences =
+        await getUserPreferences();
+
+    const periodStartDay =
+        preferences?.period_start_day || 1;
+
+    const {
+        startDate,
+        endDate,
+    } =
+        getCurrentFinancialPeriod(
+            periodStartDay
+        );
+
+    const periodTransactions =
         data?.filter((tx) => {
 
             const txDate =
@@ -22,27 +49,44 @@ export async function getDashboardMetrics() {
                 );
 
             return (
-                txDate.getMonth() ===
-                now.getMonth() &&
-                txDate.getFullYear() ===
-                now.getFullYear()
+                txDate >= startDate &&
+                txDate <= endDate
             );
 
         }) || [];
 
     const income =
-        currentMonthTransactions
-            .filter(
-                (t) => t.type === "income"
-            )
+        periodTransactions
+            .filter((t) => {
+
+                if (
+                    t.type !== "income"
+                ) {
+                    return false;
+                }
+
+                const account =
+                    accounts?.find(
+                        (a) =>
+                            a.name ===
+                            t.account
+                    );
+
+                return (
+                    account?.type !==
+                    "liability"
+                );
+
+            })
             .reduce(
                 (sum, t) =>
-                    sum + Number(t.amount),
+                    sum +
+                    Number(t.amount),
                 0
             );
 
     const expenses =
-        currentMonthTransactions
+        periodTransactions
             .filter(
                 (t) => t.type === "expense"
             )

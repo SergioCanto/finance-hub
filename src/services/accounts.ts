@@ -102,23 +102,54 @@ export async function getAccountsWithBalance() {
                         tx.account === account.name
                 ) || [];
 
-            const movementTotal =
+            const calculatedBalance =
                 accountTransactions.reduce(
-                    (sum, tx) =>
-                        sum + Number(tx.amount),
-                    0
+                    (balance, tx) => {
+
+                        const amount =
+                            Math.abs(
+                                Number(tx.amount)
+                            );
+
+                        if (
+                            account.type === "asset"
+                        ) {
+
+                            return tx.type === "income"
+                                ? balance + amount
+                                : balance - amount;
+
+                        }
+
+                        if (
+                            account.type === "liability"
+                        ) {
+
+                            return tx.type === "expense"
+                                ? balance + amount
+                                : balance - amount;
+
+                        }
+
+                        return balance;
+
+                    },
+                    Number(
+                        account.opening_balance || 0
+                    )
                 );
 
             return {
                 ...account,
 
                 calculated_balance:
-                    Number(
-                        account.opening_balance || 0
-                    ) + movementTotal,
+                    calculatedBalance,
 
                 movement_total:
-                    movementTotal,
+                    calculatedBalance -
+                    Number(
+                        account.opening_balance || 0
+                    ),
             };
 
         }) || []
