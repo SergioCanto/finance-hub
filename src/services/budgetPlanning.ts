@@ -59,9 +59,19 @@ export async function getBudgetPlanning() {
         transactions
             ?.filter((tx) => {
 
+                const [
+                    year,
+                    month,
+                    day,
+                ] = tx.transaction_date
+                    .split("-")
+                    .map(Number);
+
                 const txDate =
                     new Date(
-                        tx.transaction_date
+                        year,
+                        month - 1,
+                        day
                     );
 
                 return (
@@ -97,9 +107,19 @@ export async function getBudgetPlanning() {
         transactions
             ?.filter((tx) => {
 
+                const [
+                    year,
+                    month,
+                    day,
+                ] = tx.transaction_date
+                    .split("-")
+                    .map(Number);
+
                 const txDate =
                     new Date(
-                        tx.transaction_date
+                        year,
+                        month - 1,
+                        day
                     );
 
                 const isCurrentPeriod =

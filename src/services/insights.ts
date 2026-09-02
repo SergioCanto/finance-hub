@@ -42,9 +42,19 @@ export async function getInsights() {
     const periodTransactions =
         transactions?.filter((tx) => {
 
+            const [
+                year,
+                month,
+                day,
+            ] = tx.transaction_date
+                .split("-")
+                .map(Number);
+
             const txDate =
                 new Date(
-                    tx.transaction_date
+                    year,
+                    month - 1,
+                    day
                 );
 
             return (

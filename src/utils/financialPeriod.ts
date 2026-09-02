@@ -2,8 +2,7 @@ export function getCurrentFinancialPeriod(
     periodStartDay: number
 ) {
 
-    const now =
-        new Date();
+    const now = new Date();
 
     let startDate =
         new Date(
@@ -26,6 +25,10 @@ export function getCurrentFinancialPeriod(
 
     }
 
+    startDate.setHours(
+        0, 0, 0, 0
+    );
+
     const endDate =
         new Date(startDate);
 
@@ -37,8 +40,13 @@ export function getCurrentFinancialPeriod(
         endDate.getDate() - 1
     );
 
+    endDate.setHours(
+        23, 59, 59, 999
+    );
+
     return {
         startDate,
         endDate,
     };
+
 }

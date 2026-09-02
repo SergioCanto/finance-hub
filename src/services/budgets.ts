@@ -55,9 +55,20 @@ export async function getBudgetStatus() {
                         return false;
                     }
 
-                    const txDate = new Date(
-                        tx.transaction_date
-                    );
+                    const [
+                        year,
+                        month,
+                        day,
+                    ] = tx.transaction_date
+                        .split("-")
+                        .map(Number);
+
+                    const txDate =
+                        new Date(
+                            year,
+                            month - 1,
+                            day
+                        );
 
                     return (
                         txDate >= cycle.startDate &&

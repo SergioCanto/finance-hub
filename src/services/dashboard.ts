@@ -43,9 +43,19 @@ export async function getDashboardMetrics() {
     const periodTransactions =
         data?.filter((tx) => {
 
+            const [
+                year,
+                month,
+                day,
+            ] = tx.transaction_date
+                .split("-")
+                .map(Number);
+
             const txDate =
                 new Date(
-                    tx.transaction_date
+                    year,
+                    month - 1,
+                    day
                 );
 
             return (
