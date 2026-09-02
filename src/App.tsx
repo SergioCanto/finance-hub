@@ -19,6 +19,8 @@ import Categories from "./pages/Categories";
 import Accounts from "./pages/Accounts";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import CreditCards
+  from "./pages/CreditCards";
 
 function App() {
   const [session, setSession] =
@@ -131,6 +133,11 @@ function App() {
             <Route
               path="/accounts"
               element={<Accounts />}
+            />
+
+            <Route
+              path="/credit-cards"
+              element={<CreditCards />}
             />
 
           </Route>

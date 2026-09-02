@@ -20,6 +20,10 @@ import {
     getCurrentFinancialPeriod,
 } from "../utils/financialPeriod";
 
+import {
+    getUpcomingCardPayments,
+} from "../services/dashboardCreditCards";
+
 export default function Dashboard() {
     const [metrics, setMetrics] = useState({
         income: 0,
@@ -35,6 +39,12 @@ export default function Dashboard() {
     const [netWorth, setNetWorth] = useState(0);
     const [insights, setInsights] =
         useState<string[]>([]);
+
+    const [
+        upcomingCards,
+        setUpcomingCards,
+    ] = useState<any[]>([]);
+
     const [
         budgetPlanning,
         setBudgetPlanning,
@@ -52,6 +62,7 @@ export default function Dashboard() {
         loadNetWorth();
         loadInsights();
         loadBudgetPlanning();
+        loadUpcomingCards();
     }, []);
     async function loadPreferences() {
 
@@ -66,6 +77,14 @@ export default function Dashboard() {
                 preferences.period_start_day
             );
         }
+    }
+    async function loadUpcomingCards() {
+
+        const cards =
+            await getUpcomingCardPayments();
+
+        setUpcomingCards(cards);
+
     }
     async function loadNetWorth() {
         const worth =
@@ -436,28 +455,125 @@ export default function Dashboard() {
 
                         {/* Insights */}
 
-                        <div className="bg-zinc-900 rounded-xl p-6">
+                        <div className="
+                            space-y-6
+                        ">
 
-                            <h2 className="font-bold mb-4">
-                                Insights
-                            </h2>
+                            {/* Próximos Pagos */}
 
-                            <div className="space-y-3">
+                            <div className="
+                                bg-zinc-900
+                                rounded-xl
+                                p-6
+                            ">
 
-                                {insights.map(
-                                    (insight, index) => (
+                                <h2 className="font-bold mb-4">
+                                    💳 Próximos Pagos
+                                </h2>
+
+                                <div className="space-y-3">
+
+                                    {upcomingCards.length === 0 && (
+
                                         <div
-                                            key={index}
                                             className="
                                             bg-zinc-800
                                             p-3
                                             rounded-lg
+                                            text-zinc-400
                                             "
                                         >
-                                            {insight}
+                                            No hay pagos pendientes.
                                         </div>
-                                    )
-                                )}
+
+                                    )}
+
+                                    {upcomingCards
+                                        .slice(0, 3)
+                                        .map((card, index) => (
+
+                                            <div
+                                                key={index}
+                                                className="
+                                                bg-zinc-800
+                                                p-4
+                                                rounded-lg
+                                                "
+                                            >
+
+                                                <p className="font-semibold">
+                                                    {card.cardName}
+                                                </p>
+
+                                                <p className="text-red-400 text-lg font-bold mt-1">
+                                                    $
+                                                    {card.balance.toLocaleString()}
+                                                </p>
+
+                                                <p
+                                                    className={`
+                                                        text-sm
+                                                        mt-2
+                                                        ${card.daysRemaining <= 3
+                                                            ? "text-red-400"
+                                                            : card.daysRemaining <= 7
+                                                                ? "text-orange-400"
+                                                                : card.daysRemaining <= 15
+                                                                    ? "text-yellow-400"
+                                                                    : "text-green-400"
+                                                        }
+    `}
+                                                >
+
+                                                    {card.daysRemaining <= 0
+                                                        ? "🔥 Vence hoy"
+                                                        : `⏳ Vence en ${card.daysRemaining} días`}
+
+                                                </p>
+
+                                            </div>
+
+                                        ))}
+
+                                </div>
+
+                            </div>
+
+                            {/* Insights */}
+
+                            <div className="
+                                bg-zinc-900
+                                rounded-xl
+                                p-6
+                            ">
+
+                                <h2 className="font-bold mb-4">
+                                    Insights
+                                </h2>
+
+                                <div className="space-y-3">
+
+                                    {insights.map(
+                                        (
+                                            insight,
+                                            index
+                                        ) => (
+
+                                            <div
+                                                key={index}
+                                                className="
+                                                bg-zinc-800
+                                                p-3
+                                                rounded-lg
+                                                "
+                                            >
+                                                {insight}
+                                            </div>
+
+                                        )
+                                    )}
+
+                                </div>
 
                             </div>
 

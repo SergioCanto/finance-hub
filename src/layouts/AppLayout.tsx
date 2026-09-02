@@ -9,6 +9,7 @@ import {
     Target,
     Tags,
     Building2,
+    CreditCard,
     Menu,
     X,
 } from "lucide-react";
@@ -141,6 +142,13 @@ export default function AppLayout() {
                         <Building2 size={18} />
                         Cuentas
                     </Link>
+                    <Link
+                        to="/credit-cards"
+                        className="flex items-center gap-3 hover:text-blue-400"
+                    >
+                        <CreditCard size={18} />
+                        Tarjetas
+                    </Link>
                 </nav>
                 <div className="mt-8">
 
@@ -251,6 +259,16 @@ export default function AppLayout() {
                         >
                             <Building2 size={18} />
                             Cuentas
+                        </Link>
+                        <Link
+                            to="/credit-cards"
+                            className="flex items-center gap-3 py-2"
+                            onClick={() =>
+                                setMobileMenuOpen(false)
+                            }
+                        >
+                            <CreditCard size={18} />
+                            Tarjetas
                         </Link>
 
                     </nav>

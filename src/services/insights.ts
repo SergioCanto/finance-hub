@@ -7,6 +7,11 @@ import {
     getCurrentFinancialPeriod,
 } from "../utils/financialPeriod";
 
+import {
+    getCreditCardInsights,
+} from "./creditCardInsights";
+
+
 
 export async function getInsights() {
     const {
@@ -60,6 +65,9 @@ export async function getInsights() {
             .from("goals")
             .select("*")
             .eq("user_id", user?.id);
+
+    const creditCardInsights =
+        await getCreditCardInsights();
 
     const { data: accounts } =
         await supabase
@@ -191,6 +199,65 @@ export async function getInsights() {
             `📉 La categoría de mayor gasto es ${topCategory[0]} ($${topCategory[1].toLocaleString()})`
         );
     }
+
+    creditCardInsights.forEach(
+        (card) => {
+
+            if (
+                card.balance <= 0
+            ) {
+                return;
+            }
+
+            const dueDate =
+                card.paymentDate
+                    .toLocaleDateString(
+                        "es-MX",
+                        {
+                            day: "2-digit",
+                            month: "short",
+                        }
+                    );
+
+            if (
+                card.daysRemaining <= 0
+            ) {
+
+                insights.push(
+                    `❌ La fecha de pago de ${card.cardName} ya venció. Revisa tu saldo de $${card.balance.toLocaleString()}.`
+                );
+
+                return;
+            }
+
+            if (
+                card.daysRemaining <= 3
+            ) {
+
+                insights.push(
+                    `🔥 Tu pago de ${card.cardName} vence en ${card.daysRemaining} días. Paga $${card.balance.toLocaleString()} antes del ${dueDate}.`
+                );
+
+                return;
+            }
+
+            if (
+                card.daysRemaining <= 7
+            ) {
+
+                insights.push(
+                    `🚨 ${card.cardName} vence en ${card.daysRemaining} días. Considera pagar $${card.balance.toLocaleString()} antes del ${dueDate}.`
+                );
+
+                return;
+            }
+
+            insights.push(
+                `💳 Paga $${card.balance.toLocaleString()} de ${card.cardName} antes del ${dueDate} para evitar intereses.`
+            );
+
+        }
+    );
 
     return insights;
 }
