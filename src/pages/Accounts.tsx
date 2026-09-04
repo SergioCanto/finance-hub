@@ -41,6 +41,7 @@ export default function Accounts() {
             name: string;
             type: string;
             opening_balance: number;
+            include_in_net_worth: boolean;
         }
     ) {
         if (editingAccount) {
@@ -165,6 +166,8 @@ export default function Accounts() {
                                             editingAccount.type,
                                         opening_balance:
                                             editingAccount.opening_balance,
+                                        include_in_net_worth:
+                                            editingAccount.include_in_net_worth,
                                     }
                                     : undefined
                             }

@@ -52,7 +52,13 @@ export async function updateAccount(
 ) {
     const { data, error } = await supabase
         .from("accounts")
-        .update(account)
+        .update({
+            name: account.name,
+            type: account.type,
+            opening_balance: account.opening_balance,
+            include_in_net_worth:
+                account.include_in_net_worth,
+        })
         .eq("id", id)
         .select();
 
