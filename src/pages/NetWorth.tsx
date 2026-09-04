@@ -25,7 +25,7 @@ export default function NetWorth() {
                 className="
                 grid
                 grid-cols-1
-                md:grid-cols-3
+                md:grid-cols-4
                 gap-6
                 "
             >
@@ -46,6 +46,23 @@ export default function NetWorth() {
                         $
                         {data.liabilities.toLocaleString()}
                     </h2>
+                </div>
+
+                <div className="bg-zinc-900 p-6 rounded-xl">
+
+                    <p>
+                        🔒 Patrimonio Oculto
+                    </p>
+
+                    <h2 className="
+                        text-3xl
+                        text-yellow-400
+                        font-bold
+                    ">
+                        $
+                        {data.hiddenNetWorth.toLocaleString()}
+                    </h2>
+
                 </div>
 
                 <div className="bg-zinc-900 p-6 rounded-xl">

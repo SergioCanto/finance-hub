@@ -21,6 +21,7 @@ export async function createAccount(
         name: string;
         type: string;
         opening_balance: number;
+        include_in_net_worth: boolean;
     }
 ) {
     const {
@@ -46,6 +47,7 @@ export async function updateAccount(
         name: string;
         type: string;
         opening_balance: number;
+        include_in_net_worth: boolean;
     }
 ) {
     const { data, error } = await supabase

@@ -5,12 +5,14 @@ type Props = {
         name: string;
         type: string;
         opening_balance: number;
+        include_in_net_worth: boolean;
     }) => Promise<void>;
 
     initialData?: {
         name: string;
         type: string;
         opening_balance: number;
+        include_in_net_worth?: boolean;
     };
 
     isEditing?: boolean;
@@ -25,6 +27,7 @@ export default function AccountForm({
         name: "",
         type: "asset",
         opening_balance: "",
+        include_in_net_worth: true,
     });
 
     useEffect(() => {
@@ -35,6 +38,8 @@ export default function AccountForm({
                     String(
                         initialData.opening_balance
                     ),
+                include_in_net_worth:
+                    initialData.include_in_net_worth ?? true,
             });
         }
     }, [initialData]);
@@ -105,6 +110,38 @@ export default function AccountForm({
                 />
             </div>
 
+            <div>
+
+                <label
+                    className="
+                    flex
+                    items-center
+                    gap-3
+                    text-sm
+                    text-zinc-300
+                    "
+                >
+
+                    <input
+                        type="checkbox"
+                        checked={
+                            form.include_in_net_worth
+                        }
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                include_in_net_worth:
+                                    e.target.checked,
+                            })
+                        }
+                    />
+
+                    Incluir en Patrimonio Neto
+
+                </label>
+
+            </div>
+
             <button
                 className="
                 w-full
@@ -119,6 +156,8 @@ export default function AccountForm({
                             Number(
                                 form.opening_balance || 0
                             ),
+                        include_in_net_worth:
+                            form.include_in_net_worth,
                     })
                 }
             >

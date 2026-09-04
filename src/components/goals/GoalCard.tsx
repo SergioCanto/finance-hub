@@ -10,6 +10,11 @@ type Props = {
         currentAmount: number
     ) => void;
 
+    onWithdraw: (
+        goalId: string,
+        currentAmount: number
+    ) => void;
+
     onDelete: (
         goalId: string
     ) => void;
@@ -28,6 +33,7 @@ export default function GoalCard({
     current,
     targetDate,
     onContribution,
+    onWithdraw,
     onDelete,
     onComplete,
     onEdit,
@@ -132,6 +138,30 @@ export default function GoalCard({
                         💰 Aportar
                     </button>
                 )}
+
+                {current > 0 && (
+
+                    <button
+                        onClick={() =>
+                            onWithdraw(id, current)
+                        }
+                        className="
+                        mt-3
+                        w-full
+                        border
+                        border-yellow-500
+                        text-yellow-400
+                        hover:bg-yellow-500/10
+                        font-semibold
+                        py-3
+                        rounded-lg
+                        "
+                    >
+                        ➖ Retirar Fondos
+                    </button>
+
+                )}
+
                 {isCompleted && (
                     <button
                         onClick={() =>

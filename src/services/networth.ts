@@ -70,8 +70,20 @@ export async function getNetWorth() {
             };
         }) || [];
 
+    const visibleAccounts =
+        accountsWithBalance.filter(
+            account =>
+                account.include_in_net_worth
+        );
+
+    const hiddenAccounts =
+        accountsWithBalance.filter(
+            account =>
+                !account.include_in_net_worth
+        );
+
     const assets =
-        accountsWithBalance
+        visibleAccounts
             .filter(
                 (account) =>
                     account.type === "asset"
@@ -83,7 +95,7 @@ export async function getNetWorth() {
             );
 
     const liabilities =
-        accountsWithBalance
+        visibleAccounts
             .filter(
                 (account) =>
                     account.type === "liability"
@@ -94,9 +106,18 @@ export async function getNetWorth() {
                 0
             );
 
+    const hiddenNetWorth =
+        hiddenAccounts.reduce(
+            (sum, account) =>
+                sum +
+                account.currentBalance,
+            0
+        );
+
     return {
         assets,
         liabilities,
+        hiddenNetWorth,
         netWorth:
             assets - liabilities,
         accounts:

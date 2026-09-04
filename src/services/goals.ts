@@ -109,3 +109,47 @@ export async function updateGoal(
 
     return data;
 }
+
+export async function withdrawFromGoal(
+    id: string,
+    amount: number
+) {
+
+    const { data: goal, error } =
+        await supabase
+            .from("goals")
+            .select("current_amount")
+            .eq("id", id)
+            .single();
+
+    if (error) throw error;
+
+    if (!goal) {
+        throw new Error(
+            "Meta no encontrada"
+        );
+    }
+
+    const newAmount =
+        Math.max(
+            Number(goal.current_amount) -
+            amount,
+            0
+        );
+
+    const { data, error: updateError } =
+        await supabase
+            .from("goals")
+            .update({
+                current_amount:
+                    newAmount,
+            })
+            .eq("id", id)
+            .select();
+
+    if (updateError) {
+        throw updateError;
+    }
+
+    return data;
+}

@@ -10,6 +10,7 @@ import {
     completeGoal,
     deleteGoal,
     updateGoal,
+    withdrawFromGoal,
 } from "../services/goals";
 
 export default function Goals() {
@@ -31,6 +32,13 @@ export default function Goals() {
     const [contribution,
         setContribution] =
         useState(0);
+
+    const [
+        contributionMode,
+        setContributionMode,
+    ] = useState<
+        "deposit" | "withdraw"
+    >("deposit");
 
     const [showContributionModal,
         setShowContributionModal] =
@@ -127,21 +135,81 @@ export default function Goals() {
             currentAmount
         );
 
+        setContributionMode(
+            "deposit"
+        );
+
         setShowContributionModal(true);
     }
 
-    async function handleContribution() {
-        await addContribution(
-            selectedGoalId,
-            contribution,
-            selectedCurrentAmount
+    function openWithdrawModal(
+        goalId: string,
+        currentAmount: number
+    ) {
+
+        setSelectedGoalId(goalId);
+
+        setSelectedCurrentAmount(
+            currentAmount
         );
+
+        setContributionMode(
+            "withdraw"
+        );
+
+        setShowContributionModal(
+            true
+        );
+
+    }
+
+    async function handleContribution() {
+
+        if (
+            contribution <= 0
+        ) {
+            return;
+        }
+
+        if (
+            contributionMode ===
+            "withdraw"
+        ) {
+
+            if (
+                contribution >
+                selectedCurrentAmount
+            ) {
+
+                alert(
+                    "No puedes retirar más del monto acumulado."
+                );
+
+                return;
+
+            }
+
+            await withdrawFromGoal(
+                selectedGoalId,
+                contribution
+            );
+
+        } else {
+
+            await addContribution(
+                selectedGoalId,
+                contribution,
+                selectedCurrentAmount
+            );
+
+        }
 
         setContribution(0);
 
         setShowContributionModal(false);
 
         loadGoals();
+
     }
 
     return (
@@ -207,8 +275,28 @@ export default function Goals() {
 
                         <div className="flex justify-between mb-4">
                             <h2 className="text-xl font-bold">
-                                Aportar a Meta
+
+                                {contributionMode ===
+                                    "withdraw"
+                                    ? "Retirar Fondos"
+                                    : "Aportar a Meta"}
+
                             </h2>
+
+                            {contributionMode ===
+                                "withdraw" && (
+
+                                    <p className="
+                                        text-zinc-400
+                                        mb-4
+                                    ">
+                                        Disponible:
+                                        {" "}
+                                        $
+                                        {selectedCurrentAmount.toLocaleString()}
+                                    </p>
+
+                                )}
 
                             <button
                                 onClick={() =>
@@ -234,7 +322,12 @@ export default function Goals() {
                             onClick={handleContribution}
                             className="w-full mt-4 bg-green-600 py-3 rounded-lg"
                         >
-                            Guardar Aportación
+                            {
+                                contributionMode ===
+                                    "withdraw"
+                                    ? "Confirmar Retiro"
+                                    : "Guardar Aportación"
+                            }
                         </button>
 
                     </div>
@@ -261,6 +354,9 @@ export default function Goals() {
                         targetDate={goal.target_date}
                         onContribution={
                             openContributionModal
+                        }
+                        onWithdraw={
+                            openWithdrawModal
                         }
                         onDelete={handleDeleteGoal}
                         onComplete={handleCompleteGoal}
